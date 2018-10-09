@@ -16,48 +16,24 @@ This project achieves vehicle detection by first implementing an object (vehicle
 
 <div align="center">
   <p><img src="./figs/fig1.jpg" width="600"></p>
-  <p>Fig. 1: Image on which detection is to be performed with depiction of region to be <br/>analyzed by the image classifier.</p>
+  <p>Fig. 1: Image on which detection is to be performed with <br/>depiction of region to be analyzed by the image classifier.</p>
 </div>
 
 Although the sliding windows technique presents challenges of its own in practice, particularly in terms of filtering out false positives, the remainder of this documentation focuses on the image classifier.
 
 ### Image Classifier
-The image classifier leverages traditional computer vision techniques, namely feature extraction followed by classification. In particular, the HoG feature extractor and Linear Support Vector Classifier (SVC) were used. A random sampling of the dataset is shown below in the same resolution as used by the classifier, 64 x 64 pixels. The dataset contains 8,792 true labels (vehicles) and 8,972 false labels (not vehicles).
+The image classifier leverages traditional computer vision techniques, namely feature extraction followed by classification. In particular, the HoG feature extractor and Linear Support Vector Classifier (SVC) were used. A random sampling of the dataset is shown below in the same resolution as used by the classifier, 64 x 64 pixels. The dataset contains 8,792 true labels ([vehicles](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip)) and 8,972 false labels ([not vehicles](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip)).
 
 <div align="center">
-  <p><img src="./figs/figs2.png"></p>
+  <p><img src="./figs/fig2.png"></p>
   <p>Fig. 2: Random sampling of dataset.</p>
 </div>
 
-Using only the center camera for prediction (architecture discussed later) might suggest that only center camera images be used for training. However, it is possible to use the left and right camera images to represent what's referred to as recovery data. Similar to a human learning to recover after veering from the center of a lane, recovery data trains the CNN what to do in the event it finds itself off-center. For example, if Fig. 5(d) (cropping discussed later), an image from the left camera, were actually captured by the center camera, the corresponding steering angle should represent a corrective angle to the right. Similarly, Fig. 5(f) would require the opposite corrective action. To implement this, images from the left and right camera should have their corresponding labels include a correction factor. This approach was described in a 2016 paper by NVIDIA [1] and effectively triples the training data while implicitly including recovery data. If recovery data were not available implicitly through the left and right cameras, it would have to be collected explicitly.
-
-Fig. 4 shows a histogram of the data from Fig. 3(b) after it has undergone the augmentation of recovery data as described above. This resulting dataset is subsequently split to create a training set and a validation set.
+While it’s beyond the intended scope of this documentation to describe HoG in detail (refer to [1]), note that the HoG technique steps through portions of an image and computes the orientation (or angle) of the gradient at each step. In this project, rather than calculating the gradients in the RGB colorspace, the YUV colorspace was used for robustness. Having performed the colorspace mapping, HoG features are extracted for each channel independently. The result of each channel is shaped into a one-dimensional vector and concatenated with the HoG features of other channels, resulting in a final feature vector in ℝ1188 R1188. Fig. 3 gives a visualization of the HoG features for the Y channel (note: images enlarged from native 64 x 64 to show detail).
 
 <div align="center">
-  <p><img src="./figs/after.svg"></p>
-  <p>Fig. 4: Histogram of the final dataset <br/> with recovery data.</p>
-</div>
-
-### CNN Architecture and Training
-In addition to the common normalization scheme for images ([0, 255] ↦ [0, 1.0]), cropping and resizing were also implemented as part of preprocessing. Specifically, the top 55 pixels and bottom 25 pixels were cropped and the resulting image was resized to 200 x 66 [1]. Cropping allows for the CNN to focus on the most relevant content without having to learn superfluous information (sky, scenery, etc). Perhaps more importantly, cropping and resizing result in smaller activation layers and thus fewer CNN parameters, leading to quicker processing in real-time applications. Fig. 5 shows the cropping and resizing that would be performed on the example capture from Fig. 2.
-
-<div align="center">
-  <p><img src="./figs/crop.png" width="850"></p>
-  <p>Fig. 5: Cropping and resizing performed on set of images in Fig. 2.</p>
-</div>
-
-The CNN architecture is borrowed from NVIDIA [1], has a total of 252,219 trainable parameters, and takes in a single image as input (center camera). A complete diagram of the architecture, depicting the activation layers, is shown below with the preprocessing layers omitted for brevity. The architecture from comma.ai [2] was considered but resulted in nearly seven times as many trainable parameters.
-
-<div align="center">
-  <p><img src="./figs/cnn.svg"></p>
-  <p>Fig. 6: CNN architecture borrowed from NVIDIA.</p>
-</div>
-
-The learning rate and batch size were treated as hyperparameters during the training process. The model was trained using RMS loss and the Adam optimizer.
-
-<div align="center">
-  <p><img src="./figs/loss.svg"></p>
-  <p>Fig. 7: Training and validation loss.</p>
+  <p><img src="./figs/hog.png"></p>
+  <p>Fig. 3: Enlarged RGB image and HoG features of Y channel.</p>
 </div>
 
 ### Performance
