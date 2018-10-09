@@ -4,7 +4,7 @@ This project consists of designing an image classifier that identifies the (crop
 
 <div align="center">
 <a href="https://youtu.be/zsQLIaCufbI">
-  <img src="./figs/thumbnail.png" alt="YouTube video" width="600">
+  <img src="./figs/thumbnail.png" alt="YouTube video" width="700">
 </a>
 </div>
 
@@ -15,7 +15,7 @@ Vehicle detection — and, more generally, object detection — is a complex and
 This project achieves vehicle detection by first implementing an object (vehicle) classifier and uses it to analyze subsections of an image on which detection is to be performed. An example of the technique is shown in Fig. 1. The area within the dotted white rectangle would be fed to the image classifier, which would be expected to deem that the region does not contain a vehicle. The rectangle is stepped throughout the image in a technique referred to as sliding windows and is done so at pre-determined step sizes and aspect ratios. If the area within the rectangle is not the size of the native image classifier, resizing is necessary.
 
 <div align="center">
-  <p><img src="./figs/fig1.jpg" width="600"></p>
+  <p><img src="./figs/fig1.jpg" width="700"></p>
   <p>Fig. 1: Image on which detection is to be performed with <br/>depiction of region to be analyzed by the image classifier.</p>
 </div>
 
@@ -33,14 +33,13 @@ While it’s beyond the intended scope of this documentation to describe HoG in 
 
 <div align="center">
   <p><img src="./figs/hog.png"></p>
-  <p>Fig. 3: Enlarged RGB image and HoG features of Y channel.</p>
+  <p>Fig. 3: Enlarged RGB image and <br/>HoG features of Y channel.</p>
 </div>
 
-### Performance
-Given the nature of the task at hand, a test set metric was not captured. Instead, driving performance was visually inspected in autonomous mode. The model successfully completes both tracks at a speed of 20 MPH.
+Training consists of obtaining HoG feature vectors for the entire training set and fitting a linear SVC to the feature vectors and the corresponding training labels (True/False). Using an SVC penalty parameter of C=1.0, a training set accuracy of 1.0 and validation set accuracy of 0.988 was achieved. The SVC penalty parameter and the HoG parameters were treated as hyperparameters during the training process.
 
-### Future Work
-Because the solution is expected to perform in real-time within a self-driving car, further efforts could be made in terms of exploring CNN architectures, particularly residual networks, with fewer parameters, easing processing requirements. It would also be interesting to see if performing a perspective transform within the cropped region leads to improvements. Lastly, there may be benefits in using two (left and right) or all three camera inputs into the CNN architecture; however, recovery data would have to be explicitly collected.
+### Improvements
+The HoG feature extractor along with SVC appears to work very well as a standalone classifier in this application; however, using it in a larger image for detection by way of the sliding windows technique proved to be challenging, requiring a lot of fine-tuning. Reducing the step size of the sliding windows implementation may help, but this would come at the penalty of increased computation. It’d be worthwhile to investigate recent detection techniques, particularly the You Only Look Once (YOLO) algorithm.
 
 ### Usage
 Run `./init.sh` to obtain the dataset in `./data/` and the saved Keras model in `./`.
@@ -55,5 +54,4 @@ To configure the car in autonomous mode, run `python src/drive.py steer_net_mode
 The project makes use of `numpy`, `matplotlib`, `tensorflow`, `keras`, `cv2`, `sklearn`, and `gdrive`.
 
 ### References
-[1] [End to End Learning for Self-Driving Cars, NVIDIA, 2016](https://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf)<br/>
-[2] [Learning a Driving Simulator, comma.ai, 2016](https://arxiv.org/pdf/1608.01230.pdf)
+[1] [Histograms of Oriented Gradients for Human Detection, N. Dalal et al., 2005](https://lear.inrialpes.fr/people/triggs/pubs/Dalal-cvpr05.pdf)
