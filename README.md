@@ -48,7 +48,7 @@ Run `./init.sh` to obtain the dataset in `./data/`.
 Run `python src/classifier_train.py` to train the model. The trained Linear SVC model saves to `./` as `pickled_classifier`. Note that this repo already includes a saved copy of the model. The chosen value for the SVC penalty parameter is predefined in `src/classifier_train.py` but can be changed by redefining `C`.
 
 #### Detection
-To configure the car in autonomous mode, run `python src/drive.py steer_net_model.h5`, open the simulator app, choose a desired track, and click `AUTONOMOUS MODE`. The speed set during autonomous mode is defined in `src/drive.py` as `set_speed`.
+To perform detection on `test_inputs/<file>`, run `python src/main.py test_inputs/<file>`. The file to perform detection on may be either a `jpg` or an `mp4`.
 
 ### Dependencies
 The project makes use of `gdrive` and the following Python packages: `numpy`, `matplotlib`, `opencv`, `pandas`, `sklearn`, `scipy`.
