@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 from sklearn.svm import LinearSVC
 from get_features import get_features
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
 
