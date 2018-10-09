@@ -45,9 +45,9 @@ The HoG feature extractor along with SVC appears to work very well as a standalo
 Run `./init.sh` to obtain the dataset in `./data/`.
 
 #### Training
-Run `python ./src/steer_net_train.py` to train the model. The trained Keras model saves to `./`. The chosen values for the hyperparameters (learning rate and batch size) are predefined in `./src/steer_net_train.py`, but these can be changed by redefining `alpha` and `batch_sz`.
+Run `python src/classifier_train.py` to train the model. The trained Linear SVC model saves to `./` as `pickled_classifier`. Note that this repo already includes a saved copy of the model. The chosen value for the SVC penalty parameter is predefined in `src/classifier_train.py` but can be changed by redefining `C`.
 
-#### Self-Driving
+#### Detection
 To configure the car in autonomous mode, run `python src/drive.py steer_net_model.h5`, open the simulator app, choose a desired track, and click `AUTONOMOUS MODE`. The speed set during autonomous mode is defined in `src/drive.py` as `set_speed`.
 
 ### Dependencies
