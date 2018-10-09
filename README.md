@@ -4,7 +4,7 @@ This project consists of designing an image classifier that identifies the (crop
 
 <div align="center">
 <a href="https://youtu.be/zsQLIaCufbI">
-  <img src="./figs/thumbnail.png" alt="YouTube video" width="500">
+  <img src="./figs/thumbnail.png" alt="YouTube video" width="600">
 </a>
 </div>
 
@@ -15,20 +15,13 @@ Vehicle detection — and, more generally, object detection — is a complex and
 This project achieves vehicle detection by first implementing an object (vehicle) classifier and uses it to analyze subsections of an image on which detection is to be performed. An example of the technique is shown in Fig. 1. The area within the dotted white rectangle would be fed to the image classifier, which would be expected to deem that the region does not contain a vehicle. The rectangle is stepped throughout the image in a technique referred to as sliding windows and is done so at pre-determined step sizes and aspect ratios. If the area within the rectangle is not the size of the native image classifier, resizing is necessary.
 
 <div align="center">
-  <p><img src="./figs/fig1.jpg" width="500"></p>
-  <p>Fig. 1: Start up screen of Udacity simulator.</p>
+  <p><img src="./figs/fig1.jpg" width="600"></p>
+  <p>Fig. 1: Image on which detection is to be performed with depiction of region to be analyzed by the image classifier.</p>
 </div>
 
-In training mode, all controls (steering, throttle, brake) are passed to the user. Steering angles are in [-25.0°, 25.0°] and speed is limited to 30 MPH. There are three emulated cameras (left, center, right) within the vehicle that save images (320 x 160 resolution) at regular time intervals to a user-specified file directory. In addition, a CSV file is created where each row contains the path to a set of three image captures and the corresponding steering angle at the time of capture. An example of a saved capture with a steering angle label of 0° is shown in Fig. 2 with an abbreviated example of the corresponding CSV file entry below. Note that the CSV contains normalized angles ([-25.0°, 25.0°] ↦ [-1.0, 1.0]). In autonomous mode, vehicle speed is maintained to a modifiable constant and the saved CNN model controls the steering angle.
+Although the sliding windows technique presents challenges of its own in practice, particularly in terms of filtering out false positives, the remainder of this documentation focuses on the image classifier.
 
-<div align="center">
-  <p><img src="./figs/group.png" width="850"></p>
-  <p>Fig. 2: Example capture in training mode of left, center, and right cameras.</p>
-</div>
-
-The simulator contains two tracks. The first track is generally less challenging given that the road is a one-way and only has a couple of sharp turns. Perhaps the most challenging section is a cobblestone bridge with no explicit lane markings other than guardrails on either side. The second track contains a more varied terrain comprised of a two-way, mountainous road with numerous sharp turns, steep gradients, and roadside cliffs. Both tracks are featured in the video above.
-
-### Dataset
+### Image Classifier
 With the simulator in training mode, each track was driven twice in the default direction of traffic. To prevent overfitting and to generally have more data to train and validate on, each track was driven twice in the opposite direction as well. Given that the majority of time is spent driving straight (0°) and in flat terrain, additional data was captured in sections with sharp turns and/or steep gradients. To ensure that the network had the most reliable data to learn (and validate) from, an analog joystick was used when driving around the tracks, as opposed to keyboard controls, which often lead to a jerky response.
 
 Fig. 3(a) shows a histogram of the steering angle data collected in training mode. The high count of steering angles equal to 0° is a result of the two tracks containing long stretches of straight roadway. If this data were fed directly into the CNN during training, it's likely that the trained model would have a bias towards 0°. To alleviate this issue, data samples with a steering angle label equal to 0° were downsampled by approximately one-fifth. A histogram of the resulting dataset is shown in Fig. 3(b).
