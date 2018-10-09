@@ -45,8 +45,8 @@ def draw_boxes_vid(img, bboxes, color=(0, 0, 255), thick=3):
     imcopy = np.copy(img)
 
     # Perform heatmap thresholding on bboxes, and append to queue
-    reduced_bboxes = reduced_bboxes(bboxes, img.shape, threshold=1)
-    bbox_queue.append(reduced_bboxes)
+    reduced_bboxes_ = reduced_bboxes(bboxes, img.shape, threshold=1)
+    bbox_queue.append(reduced_bboxes_)
     
     # Unpack all bboxes in queue to a list and again perform heatmap thresholding
     my_list = [item for sublist in list(bbox_queue) for item in sublist]
@@ -69,10 +69,10 @@ def draw_boxes_img(img, bboxes, color=(0, 0, 255), thick=3):
     imcopy = np.copy(img)
     
     # Perform heatmap thresholding on bboxes
-    reduced_bboxes = reduced_bboxes(bboxes, img.shape, threshold=1)
+    reduced_bboxes_ = reduced_bboxes(bboxes, img.shape, threshold=1)
 
     # Go through each of the reduced_bboxes and draw rectangle
-    for bbox in reduced_bboxes:
+    for bbox in reduced_bboxes_:
         cv2.rectangle(imcopy, (bbox[0], bbox[1]), (bbox[2], bbox[3]), color, thick)
     
     return imcopy
