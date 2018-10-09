@@ -16,19 +16,17 @@ This project achieves vehicle detection by first implementing an object (vehicle
 
 <div align="center">
   <p><img src="./figs/fig1.jpg" width="600"></p>
-  <p>Fig. 1: Image on which detection is to be performed with depiction of region to be analyzed by the image classifier.</p>
+  <p>Fig. 1: Image on which detection is to be performed with depiction of region to be <br/>analyzed by the image classifier.</p>
 </div>
 
 Although the sliding windows technique presents challenges of its own in practice, particularly in terms of filtering out false positives, the remainder of this documentation focuses on the image classifier.
 
 ### Image Classifier
-With the simulator in training mode, each track was driven twice in the default direction of traffic. To prevent overfitting and to generally have more data to train and validate on, each track was driven twice in the opposite direction as well. Given that the majority of time is spent driving straight (0°) and in flat terrain, additional data was captured in sections with sharp turns and/or steep gradients. To ensure that the network had the most reliable data to learn (and validate) from, an analog joystick was used when driving around the tracks, as opposed to keyboard controls, which often lead to a jerky response.
-
-Fig. 3(a) shows a histogram of the steering angle data collected in training mode. The high count of steering angles equal to 0° is a result of the two tracks containing long stretches of straight roadway. If this data were fed directly into the CNN during training, it's likely that the trained model would have a bias towards 0°. To alleviate this issue, data samples with a steering angle label equal to 0° were downsampled by approximately one-fifth. A histogram of the resulting dataset is shown in Fig. 3(b).
+The image classifier leverages traditional computer vision techniques, namely feature extraction followed by classification. In particular, the HoG feature extractor and Linear Support Vector Classifier (SVC) were used. A random sampling of the dataset is shown below in the same resolution as used by the classifier, 64 x 64 pixels. The dataset contains 8,792 true labels (vehicles) and 8,972 false labels (not vehicles).
 
 <div align="center">
-  <p><img src="./figs/before.svg"></p>
-  <p>Fig. 3: Histogram of the data collected <br/> in training mode before (a) and <br/> after (b) downsampling.</p>
+  <p><img src="./figs/figs2.png"></p>
+  <p>Fig. 2: Random sampling of dataset.</p>
 </div>
 
 Using only the center camera for prediction (architecture discussed later) might suggest that only center camera images be used for training. However, it is possible to use the left and right camera images to represent what's referred to as recovery data. Similar to a human learning to recover after veering from the center of a lane, recovery data trains the CNN what to do in the event it finds itself off-center. For example, if Fig. 5(d) (cropping discussed later), an image from the left camera, were actually captured by the center camera, the corresponding steering angle should represent a corrective angle to the right. Similarly, Fig. 5(f) would require the opposite corrective action. To implement this, images from the left and right camera should have their corresponding labels include a correction factor. This approach was described in a 2016 paper by NVIDIA [1] and effectively triples the training data while implicitly including recovery data. If recovery data were not available implicitly through the left and right cameras, it would have to be collected explicitly.
